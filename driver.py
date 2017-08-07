@@ -22,6 +22,7 @@ from pprint import pprint
 from anemoi.config import settings
 
 from anemoi.bots.slack import SlackBot
+from anemoi.bots.slack.messages import SlackCommsFactory
 
 ##########################################################################
 # Classes

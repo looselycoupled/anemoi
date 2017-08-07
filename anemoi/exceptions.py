@@ -26,6 +26,9 @@ class DarkSkyException(APIException):
 class DarkSkyRateLimitException(DarkSkyException):
     pass
 
+class DarkSkyInvalidResponseException(DarkSkyException):
+    pass
+
 ##########################################################################
 # Execution
 ##########################################################################

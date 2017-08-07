@@ -1,16 +1,16 @@
-# package.module
-# module description
+# anemoi.apis.dark_sky
+# Classes for interaction with the Dark Sky API
 #
 # Author:   Allen Leis <allen.leis@gmail.com>
-# Created:  timestamp
+# Created:  Mon Aug 07 01:54:53 2017 -0400
 #
 # Copyright (C) 2017 Allen Leis
 # For license information, see LICENSE
 #
-# ID: filename.py [] allen.leis@gmail.com $
+# ID: dark_sky.py [] allen.leis@gmail.com $
 
 """
-module description
+Classes for interaction with the Dark Sky API
 """
 
 ##########################################################################
@@ -42,12 +42,17 @@ BASE_URL = 'https://api.darksky.net/forecast'
 
 class DarkSky(LoggableMixin):
 
+    BASE_URL = BASE_URL
+
     def __init__(self, access_token, *args, **kwargs):
         self.access_token = access_token
         super(DarkSky, self).__init__(*args, **kwargs)
 
     @property
     def request_params(self):
+        """
+        Returns default request parameters as a dict
+        """
         return {
             'lang': 'en',
             'units': 'us',
@@ -55,9 +60,30 @@ class DarkSky(LoggableMixin):
         }
 
     def _construct_url(self, latitude, longitude):
-        return '{}/{}/{},{}'.format(BASE_URL, self.access_token, latitude, longitude)
+        """
+        Returns a full request URL based on supplied lat/long
+
+        params:
+            latitude: (float) latitude for request
+            longitude: (float) longitude for request
+
+        returns:
+            string: URL for API request
+        """
+        return '{}/{}/{},{}'.format(self.BASE_URL, self.access_token, latitude, longitude)
 
     def _request(self, latitude, longitude):
+        """
+        Performs actual API request with a given lat/long and returns json
+        response as a dict
+
+        params:
+            latitude: (float) latitude for request
+            longitude: (float) longitude for request
+
+        returns:
+            dict: converted api response from json string
+        """
         url = self._construct_url(latitude, longitude)
         response = requests.get(url, params=self.request_params)
         try:
@@ -68,10 +94,66 @@ class DarkSky(LoggableMixin):
 
         return response.json()
 
+    def _humanize_humidity(self, humidity):
+        """
+        Takes an number representing the humidity and returns a string
+        characterizing how one would perceive it.
+        """
+        # TODO determine what input humidity feels like... may also need temp
+        pass
+
+    def _humanize_current(self, data):
+        """
+        Takes expected output from API and returns a string characterizing the
+        current weather.
+
+        params:
+            data: (dict) response from dark sky api
+
+        returns:
+            string: human description of current conditions
+        """
+        # TODO: cleanup summary values such as "Drizzle"
+        try:
+            return 'It is currently {} and {} degrees outside.'.format(
+                data['currently']['summary'],
+                int(data['currently']['temperature']),
+            )
+        except KeyError as e:
+            raise DarkSkyInvalidResponseException("Could not determine current forecast.")
+
+    def _humanize_tomorrow(self, data):
+        """
+        Takes expected output from API and returns a string characterizing the
+        forecast for tomorrow's weather.
+
+        params:
+            data: (dict) response from dark sky api
+
+        returns:
+            string: human description of future weather
+        """
+        try:
+            return data['daily']['summary']
+        except KeyError as e:
+            raise DarkSkyInvalidResponseException("Could not determine tomorrow's forecast.")
+
     @rate_limit(limit=1000, period='month')
-    def forecast(self, zip_code):
+    def forecast(self, zip_code, now=True):
+        """
+        Returns the requested forecast based on supplied zip code.
+
+        params:
+            zip: (int) the zipcode to request
+            now: (bool) whether to return current or tomorrow's conditions
+        """
         latitude, longitude = 38.910353,-77.017739
-        return self._request(latitude, longitude)
+        raw = self._request(latitude, longitude)
+
+        if now:
+            return self._humanize_current(raw)
+        else:
+            return self._humanize_tomorrow(raw)
 
 ##########################################################################
 # Execution
@@ -79,4 +161,4 @@ class DarkSky(LoggableMixin):
 
 if __name__ == '__main__':
     obj = DarkSky(settings.dark_sky.access_token)
-    pprint(obj.forecast(20001))
+    print(obj.forecast(20001))

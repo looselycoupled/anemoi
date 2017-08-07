@@ -72,7 +72,11 @@ class DarkSky(LoggableMixin):
             str: the converted latitude
             str: the converted longitude
         """
-        item = self.zip_map[int(zip_code)]
+        try:
+            item = self.zip_map[int(zip_code)]
+        except KeyError as e:
+            raise DarkSkyUnknownZipException('Unknown zip code of {}'.format(zip_code))
+
         return item['latitude'], item['longitude']
 
     def _construct_url(self, latitude, longitude):

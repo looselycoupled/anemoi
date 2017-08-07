@@ -29,6 +29,9 @@ class DarkSkyRateLimitException(DarkSkyException):
 class DarkSkyInvalidResponseException(DarkSkyException):
     pass
 
+class DarkSkyUnknownZipException(DarkSkyException):
+    pass
+
 ##########################################################################
 # Execution
 ##########################################################################

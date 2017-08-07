@@ -29,6 +29,7 @@ import os
 
 class SlackConfiguration(Configuration):
     access_token = ""
+    bot_id = ""
 
 class DarkSkyConfiguration(Configuration):
     access_token = ""

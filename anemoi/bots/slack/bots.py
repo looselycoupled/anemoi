@@ -38,7 +38,7 @@ class SlackBot(LoggableMixin):
     def __init__(self, access_token, bot_id, *args, **kwargs):
         self.access_token = access_token
         self.bot_id = bot_id
-        self.message_factory = SlackCommsFactory(self.access_token)
+        self.message_factory = SlackCommsFactory(self.bot_id)
         self._shutdown_sentinel = False
         signal.signal(signal.SIGINT, self.request_shutdown)
         super(SlackBot, self).__init__(*args, **kwargs)
@@ -55,7 +55,29 @@ class SlackBot(LoggableMixin):
         self._shutdown_sentinel = True
 
     def _filter_messages(self, data):
-        return filter(lambda item: 'type' in item and item['type'] == 'message', data)
+        items = filter(lambda item: 'type' in item and item['type'] == 'message', data)
+        # print('items', items)
+
+        messages = self.message_factory.create(items)
+        # print('messages', messages)
+
+        weather_requests = [msg for msg in messages if msg._asks_for_weather]
+        # print('weather_requests', weather_requests)
+
+        return weather_requests
+
+    def _handle_weather_current(self, msg):
+        self.logger.info('Current weather request from {}'.format(msg.user))
+
+    def _handle_weather_tomorrow(self, msg):
+        self.logger.info('Tomorrow weather request from {}'.format(msg.user))
+
+    def _handle_message(self, msg):
+        if msg._asks_for_weather_currently:
+            self._handle_weather_current(msg)
+
+        if msg._asks_for_weather_tomorrow:
+            self._handle_weather_tomorrow(msg)
 
     def listen(self):
         sc = SlackClient(self.access_token)
@@ -65,8 +87,9 @@ class SlackBot(LoggableMixin):
 
                 incoming = sc.rtm_read()
                 if incoming:
-                    pprint(self._filter_messages(incoming))
-                    print('-' * 50)
+                    entreaties = self._filter_messages(incoming)
+                    [self._handle_message(msg) for msg in entreaties]
+
                 time.sleep(1)
         else:
             print "Connection Failed, invalid token?"

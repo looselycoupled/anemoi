@@ -25,8 +25,8 @@ from anemoi.utils.decorators import memoized
 # Classes
 ##########################################################################
 
-
-MessageBase = namedtuple('MessageBase', 'bot_id channel source_team team text ts type user')
+MESSAGE_FIELDS = ['bot_id', 'channel', 'source_team', 'team', 'text', 'ts', 'type', 'user', 'event_ts']
+MessageBase = namedtuple('MessageBase', ' '.join(MESSAGE_FIELDS))
 
 
 class SlackMessage(MessageBase):
@@ -42,11 +42,11 @@ class SlackMessage(MessageBase):
 
     @property
     def _asks_for_weather_currently(self):
-        return self._is_for_bot and 'current weather' in self.text
+        return self._is_for_bot and 'current weather' in self.text.lower()
 
     @property
     def _asks_for_weather_tomorrow(self):
-        return self._is_for_bot and 'current weather' in self.text
+        return self._is_for_bot and 'tomorrow weather' in self.text.lower()
 
     @property
     def _asks_for_weather(self):
@@ -72,6 +72,10 @@ class SlackMessageFactory(object):
             SlackMessage
         """
         data.update({'bot_id': self.bot_id})
+        for field in MESSAGE_FIELDS:
+            if field not in data:
+                data[field] = None
+
         return SlackMessage(**data)
 
 

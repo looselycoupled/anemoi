@@ -28,6 +28,7 @@ from anemoi.config import settings
 from anemoi.exceptions import *
 from anemoi.utils.decorators import rate_limit
 from anemoi.utils.mixins import LoggableMixin
+from anemoi.utils.geo import zip_codes
 
 
 ##########################################################################
@@ -46,6 +47,7 @@ class DarkSky(LoggableMixin):
 
     def __init__(self, access_token, *args, **kwargs):
         self.access_token = access_token
+        self.zip_map = zip_codes()
         super(DarkSky, self).__init__(*args, **kwargs)
 
     @property
@@ -58,6 +60,20 @@ class DarkSky(LoggableMixin):
             'units': 'us',
             'exclude': []
         }
+
+    def _zip_to_coordinates(self, zip_code):
+        """
+        Returns a tuple of the lat/long values for a give zip code
+
+        params:
+            zip_code: (int or str) the requested zip code
+
+        returns:
+            str: the converted latitude
+            str: the converted longitude
+        """
+        item = self.zip_map[int(zip_code)]
+        return item['latitude'], item['longitude']
 
     def _construct_url(self, latitude, longitude):
         """
@@ -147,7 +163,7 @@ class DarkSky(LoggableMixin):
             zip: (int) the zipcode to request
             now: (bool) whether to return current or tomorrow's conditions
         """
-        latitude, longitude = 38.910353,-77.017739
+        latitude, longitude = self._zip_to_coordinates(zip_code)
         raw = self._request(latitude, longitude)
 
         if now:

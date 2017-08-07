@@ -25,7 +25,7 @@ import unicodecsv as csv
 # Functions
 ##########################################################################
 
-def zipcodes():
+def zip_codes():
     """
     Returns a dict of zip code to lat/long mappings based off of the CSV found
     at https://gist.github.com/erichurst/7882666 (2013)
@@ -46,7 +46,7 @@ def zip2geo(zip_code):
     """
     Returns a dict of lat/long info for supplied zip code
     """
-    return zipcodes()[zip_code]
+    return zip_codes()[zip_code]
 
 ##########################################################################
 # Execution

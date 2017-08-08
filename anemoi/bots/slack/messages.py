@@ -25,7 +25,7 @@ from anemoi.utils.decorators import memoized
 # Classes
 ##########################################################################
 
-MESSAGE_FIELDS = ['bot_id', 'channel', 'source_team', 'team', 'text', 'ts', 'type', 'user', 'event_ts']
+MESSAGE_FIELDS = ['bot_id', 'channel', 'source_team', 'team', 'text', 'ts', 'type', 'user', 'event_ts', 'subtype']
 MessageBase = namedtuple('MessageBase', ' '.join(MESSAGE_FIELDS))
 
 
@@ -42,11 +42,23 @@ class SlackMessage(MessageBase):
 
     @property
     def _asks_for_weather_currently(self):
-        return self._is_for_bot and 'current weather' in self.text.lower()
+        # TODO: replace with regular expressions
+        text = self.text.lower()
+        return self._is_for_bot and (
+            'current weather' in text
+            or 'weather now' in text
+            or 'weather currently' in text
+        )
 
     @property
     def _asks_for_weather_tomorrow(self):
-        return self._is_for_bot and 'tomorrow weather' in self.text.lower()
+        # TODO: replace with regular expressions
+        text = self.text.lower()
+        return self._is_for_bot and (
+            'tomorrow weather' in text
+            or 'weather tomorrow' in text
+            or "tomorrow's weather" in text
+        )
 
     @property
     def _asks_for_weather(self):

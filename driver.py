@@ -34,5 +34,9 @@ from anemoi.bots.slack.messages import SlackCommsFactory
 ##########################################################################
 
 if __name__ == '__main__':
-    bot = SlackBot(settings.slack.access_token, settings.slack.bot_id)
+    bot = SlackBot(
+        slack_access_token=settings.slack.access_token,
+        slack_bot_id=settings.slack.bot_id,
+        darksky_access_token=settings.dark_sky.access_token
+    )
     bot.start()

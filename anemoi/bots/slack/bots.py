@@ -19,7 +19,6 @@ module description
 
 import time
 import signal
-from pprint import pprint
 from collections import namedtuple
 
 from slackclient import SlackClient
@@ -30,22 +29,32 @@ from anemoi.version import get_version
 from anemoi.exceptions import SlackException
 from .messages import SlackCommsFactory
 
+from .mixins import DarkSkyMixin
 
 ##########################################################################
 # Classes
 ##########################################################################
 
-class SlackBot(LoggableMixin):
+class SlackBot(LoggableMixin, DarkSkyMixin):
+    """
+    Basic Slack chat bot that can be extended by adding mixins.
 
-    def __init__(self, access_token, bot_id, *args, **kwargs):
-        self.access_token = access_token
-        self.bot_id = bot_id
+    TODO: Clean up the way mixins register themselves.  Perhaps instead have
+    a list of message handlers that respond to different message types.
+    """
+
+    def __init__(self, slack_access_token, slack_bot_id, *args, **kwargs):
+        self.access_token = slack_access_token
+        self.bot_id = slack_bot_id
         self.message_factory = SlackCommsFactory(self.bot_id)
         self._shutdown_sentinel = False
         signal.signal(signal.SIGINT, self.request_shutdown)
         super(SlackBot, self).__init__(*args, **kwargs)
 
     def start(self):
+        """
+        Public method to initiate the bot
+        """
         self.logger.info('SlackBot v{} starting up with bot ID: {}'.format(
             get_version(),
             self.bot_id
@@ -53,26 +62,33 @@ class SlackBot(LoggableMixin):
         self.listen()
 
     def request_shutdown(self, *args):
+        """
+        Signal handler and public method to signal a shutdown of the bot
+        """
         self.logger.info('SlackBot shutdown has been requested')
         self._shutdown_sentinel = True
 
     def _filter_messages(self, data):
+        """
+        Returns a list of message instances for known message types
+        """
         items = filter(lambda item: 'type' in item and item['type'] == 'message', data)
         messages = self.message_factory.create(items)
-        weather_requests = [msg for msg in messages if msg._asks_for_weather]
-        return weather_requests
+        return messages
 
-    def _handle_weather_current(self, msg):
-        self.logger.info('Current weather request from {}'.format(msg.user))
-        content = "reply for current weather"
-        self._reply(msg.channel, content)
+    def _process_message(self, msg):
+        """
+        Cycles through known message handlers in so that a message can be processed.  In
+        this manner multiple requests could be handled in a single message from the user.
+        """
+        for handler in self.handlers:
+            handler(msg)
 
-    def _handle_weather_tomorrow(self, msg):
-        self.logger.info('Tomorrow weather request from {}'.format(msg.user))
-        content = "reply for tomorrow's weather"
-        self._reply(msg.channel, content)
-
-    def _reply(self, channel, content):
+    def reply(self, channel, content):
+        """
+        Public method to post back to the Slack team.  Used by mixins which
+        actually respond to the various message types.
+        """
         try:
             response = self.client.api_call(
                 "chat.postMessage",
@@ -85,14 +101,11 @@ class SlackBot(LoggableMixin):
         except Exception as e:
             self.logger.exception(e)
 
-    def _handle_message(self, msg):
-        if msg._asks_for_weather_currently:
-            self._handle_weather_current(msg)
-
-        if msg._asks_for_weather_tomorrow:
-            self._handle_weather_tomorrow(msg)
-
     def listen(self, concurrency=4):
+        """
+        Begins the process of listening for slack messages by connecting to the
+        RTM api and responds to each request using a thread pool.
+        """
         self.client = SlackClient(self.access_token)
         with ThreadPoolExecutor(max_workers=concurrency) as pool:
 
@@ -103,8 +116,8 @@ class SlackBot(LoggableMixin):
                     if incoming:
                         entreaties = self._filter_messages(incoming)
                         for msg in entreaties:
-                            pool.submit(self._handle_message, msg)
-                            # self._handle_message(msg)
+                            pool.submit(self._process_message, msg)
+                            # self._process_message(msg)
 
                     time.sleep(1)
             else:

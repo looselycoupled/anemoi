@@ -58,14 +58,8 @@ class SlackBot(LoggableMixin):
 
     def _filter_messages(self, data):
         items = filter(lambda item: 'type' in item and item['type'] == 'message', data)
-        # print('items', items)
-
         messages = self.message_factory.create(items)
-        # print('messages', messages)
-
         weather_requests = [msg for msg in messages if msg._asks_for_weather]
-        # print('weather_requests', weather_requests)
-
         return weather_requests
 
     def _handle_weather_current(self, msg):

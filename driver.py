@@ -17,36 +17,22 @@ module description
 # Imports
 ##########################################################################
 
-from unittest import skip, TestCase
+from pprint import pprint
 
-from anemoi.apis.dark_sky import DarkSky
+from anemoi.config import settings
+
+from anemoi.bots.slack import SlackBot
+from anemoi.bots.slack.messages import SlackCommsFactory
 
 ##########################################################################
 # Classes
 ##########################################################################
 
-class TestDarkSky(TestCase):
-
-    @skip('Not Implemented')
-    def test_init(self):
-        obj = DarkSky('foo')
-        self.assertIsInstance(obj, DarkSky)
-
-    @skip('Not Implemented')
-    def test_api_unreachable(self):
-        pass
-
-    @skip('Not Implemented')
-    def test_custom_exception(self):
-        pass
-
-    @skip('Not Implemented')
-    def test_bad_zip(self):
-        pass
 
 ##########################################################################
 # Execution
 ##########################################################################
 
 if __name__ == '__main__':
-    pass
+    bot = SlackBot(settings.slack.access_token, settings.slack.bot_id)
+    bot.start()

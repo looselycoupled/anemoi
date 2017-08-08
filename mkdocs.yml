@@ -1,3 +1,9 @@
 site_name: Anemoi
+
+pages:
+- Home: index.md
+- Setup: setup.md
+- Contributing: development.md
+
 repo_url: https://github.com/looselycoupled/anemoi
 theme: readthedocs

@@ -17,6 +17,7 @@ This documentation can be found in the [docs](https://github.com/looselycoupled/
     open http://localhost:8080
 
 ![documentation website](images/docs-screenshot.png)
+<div style="margin-top: -60px; text-align:center; font-size: 9pt">(sample image)</div>
 
 To build the HTML version to put online or within Github Pages use the following command and the processed website will be placed in a new `site` directory.
 

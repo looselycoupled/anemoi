@@ -1,0 +1,34 @@
+
+# Documentation / Mkdocs related libraries
+backports-abc==0.5
+certifi==2017.7.27.1
+click==6.7
+Jinja2==2.9.6
+livereload==2.5.1
+Markdown==2.6.8
+MarkupSafe==1.0
+mkdocs==0.16.3
+PyYAML==3.11
+singledispatch==3.4.0.3
+six==1.10.0
+tornado==4.5.1
+
+# Local configuration
+confire==0.2.0
+
+# HTTP
+chardet==3.0.4
+idna==2.5
+requests==2.18.3
+urllib3==1.22
+
+# Testing libs
+nose==1.3.7
+
+# Slack API
+slackclient==1.0.7
+unicodecsv==0.14.1
+websocket-client==0.44.0
+
+# Concurrency backport
+futures==3.1.1

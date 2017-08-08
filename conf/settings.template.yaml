@@ -1,0 +1,8 @@
+zip_code: DEFAULT_ZIPCODE_HERE
+
+slack:
+  access_token: INSERT_TOKEN_HERE
+  bot_id: INSERT_HERE
+
+dark_sky:
+  access_token: INSERT_TOKEN_HERE

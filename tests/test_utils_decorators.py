@@ -17,26 +17,24 @@ module description
 # Imports
 ##########################################################################
 
-from pprint import pprint
+from unittest import skip, TestCase
+from mock import patch, Mock, MagicMock
+import requests
 
-from anemoi.config import settings
-
-from anemoi.bots.slack import SlackBot
-from anemoi.bots.slack.messages import SlackCommsFactory
+from anemoi.utils.decorators import rate_limit
+from anemoi.exceptions import *
 
 ##########################################################################
 # Classes
 ##########################################################################
 
+class TestRateLimit(TestCase):
+    # TODO: add tests for rate limit (which is already fake)
+    pass
 
 ##########################################################################
 # Execution
 ##########################################################################
 
 if __name__ == '__main__':
-    bot = SlackBot(
-        slack_access_token=settings.slack.access_token,
-        slack_bot_id=settings.slack.bot_id,
-        darksky_access_token=settings.dark_sky.access_token
-    )
-    bot.start()
+    pass

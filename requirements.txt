@@ -24,6 +24,9 @@ urllib3==1.22
 
 # Testing libs
 nose==1.3.7
+funcsigs==1.0.2
+mock==2.0.0
+pbr==3.1.1
 
 # Slack API
 slackclient==1.0.7

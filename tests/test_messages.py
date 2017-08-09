@@ -37,6 +37,8 @@ class TestMessages(TestCase):
             'ts': '1502140702.608441',
             'type': 'message',
             'user': 'UYYYYYYY',
+            'event_ts': '',
+            'subtype': '',
             'bot_id': self.bot_id
         }
         obj = SlackMessage(**data)
@@ -51,6 +53,8 @@ class TestMessages(TestCase):
             'ts': '1502140702.608441',
             'type': 'message',
             'user': 'UYYYYYYY',
+            'event_ts': '',
+            'subtype': '',
             'bot_id': self.bot_id
         }
         obj = SlackMessage(**data)
@@ -65,6 +69,8 @@ class TestMessages(TestCase):
             'ts': '1502140702.608441',
             'type': 'message',
             'user': 'UYYYYYYY',
+            'event_ts': '',
+            'subtype': '',
             'bot_id': self.bot_id
         }
         obj = SlackMessage(**data)

@@ -26,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from anemoi.utils.mixins import LoggableMixin
 from anemoi.version import get_version
-from anemoi.exceptions import SlackException
+from anemoi.exceptions import SlackException, SlackBadResponse
 from .messages import SlackCommsFactory
 
 from .mixins import DarkSkyMixin
@@ -98,8 +98,11 @@ class SlackBot(LoggableMixin, DarkSkyMixin):
             )
             if not response['ok']:
                 self.logger.error('Error posting reply to channel')
+                raise SlackBadResponse('Slack response was not ok')
+
         except Exception as e:
             self.logger.exception(e)
+            raise
 
     def listen(self, concurrency=4):
         """
@@ -117,9 +120,8 @@ class SlackBot(LoggableMixin, DarkSkyMixin):
                         entreaties = self._filter_messages(incoming)
                         for msg in entreaties:
                             pool.submit(self._process_message, msg)
-                            # self._process_message(msg)
 
-                    time.sleep(1)
+                    time.sleep(.5)
             else:
                 print "Connection Failed, invalid token?"
 

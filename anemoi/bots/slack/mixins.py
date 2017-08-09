@@ -40,7 +40,7 @@ class DarkSkyMixin(object):
         super(DarkSkyMixin, self).__init__(*args, **kwargs)
 
     def _register(self):
-        if not hasattr(self, 'registry'):
+        if not hasattr(self, 'handlers'):
             self.handlers = []
         self.handlers.append(self._handle_weather_message)
 

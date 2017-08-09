@@ -1,6 +1,6 @@
 # Anemoi
 
-**The greatest Slack chatbot ever devised by man**
+**The greatest Slack chatbot ever devised by man crafted lovingly with human hands**
 
 [![zephyrus wind engraving by Ken Mayer](docs/images/readme-anemoi.jpg)](https://en.wikipedia.org/wiki/Anemoi)
 
@@ -21,6 +21,72 @@ Once the documentation server has started up, open a browser to view the documen
 
 
 ## Setup
+
+Setup is fairly standard for a Python codebase without automated installation using pip or easy_install (coming soon&trade;).  The following instructions will help you install and configure the bot for your own use.
+
+### Download
+
+At the moment, the only setup available is by cloning or downloading the codebase from the Github [repo](https://github.com/looselycoupled/anemoi).
+
+    git clone git@github.com:looselycoupled/anemoi.git
+
+## Dependencies
+
+This codebase was developed with Python 2.7 and various libraries installed with `pip`.  To install the required dependencies use the command below:
+
+    pip install -r requirements.txt
+
+
+### Configuration
+
+This codebase uses [confire](confire.readthedocs.org) for configuration which makes use of YAML files.  A default/template file has been provided at `conf/settings.template.yaml`.  Copy this file and then rename it using your desired environment name in place of the word `template`.  As an example, one could create a development environment copy using the bash command below.
+
+    cp conf/settings.template.yaml conf/settings.development.yaml
+
+Then supply the correct values as identified within the template as shown below.
+
+    zip_code: DEFAULT_ZIPCODE_HERE
+
+    slack:
+      access_token: INSERT_TOKEN_HERE
+      bot_id: INSERT_HERE
+
+    dark_sky:
+      access_token: INSERT_TOKEN_HERE
+
+### Startup
+
+To start the bot after creating a config file, you can use the supplied `anemoibot` executable file as shown below:
+
+    $ ./anemoibot start
+    [2017-08-08 21:32:42 -0400] INFO {anemoi.start:60} SlackBot v0.0.1 starting up with bot ID: U6A9TFYCB
+
+### More info
+
+The supplied CLI support standard `-h` flag during execution to provide extra help per the example below:
+
+    $ ./anemoibot -h
+    usage: anemoibot [-h] [-v] [--slack_token SLACK_TOKEN] [--bot_id BOT_ID]
+                     [--darksky_token DARKSKY_TOKEN]
+                     {start,list} ...
+
+    Slack client to respond to user messages
+
+    positional arguments:
+      {start,list}                   commands
+        start                        List available features of the chatbot
+        list                         List available features of the chatbot
+
+    optional arguments:
+      -h, --help                     show this help message and exit
+      -v, --version                  show program's version number and exit
+
+    slack options:
+      --slack_token SLACK_TOKEN      for Slack integration
+      --bot_id BOT_ID                Slack ID of the bot
+
+    dark sky options:
+      --darksky_token DARKSKY_TOKEN  for DarkSky integration
 
 See the [Setup](https://github.com/looselycoupled/anemoi/tree/master/docs/setup.md) page for more information on how to configure a production environment.
 

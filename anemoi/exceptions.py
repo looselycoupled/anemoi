@@ -35,6 +35,9 @@ class DarkSkyUnknownZipException(DarkSkyException):
 class SlackException(Exception):
     pass
 
+class SlackBadResponse(SlackException):
+    pass
+
 
 ##########################################################################
 # Execution
